@@ -82,9 +82,9 @@ onMounted(() => {
 })
 
 const defaultCode = `
-  A = log<123>;
-  C(x) = x<"a">;
-  main = (as)A + C<as>;
+  A(c) = c(a).log<a>;
+  B(c) = c(b).log<b>;
+  main = (ch1)(ch2) A<ch1> | B<ch2> | (ch1<"ma"> + ch2<"mb"> + log<"ciao">);
 `
 
 const code = useStorage('pitogo-code', defaultCode)
