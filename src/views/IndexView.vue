@@ -59,6 +59,7 @@
 <script setup lang="ts">
 import * as pitogo from 'pitogo'
 import { computed, nextTick, ref, type Ref } from 'vue'
+import { gofmt as gofmtr } from 'gofmtr'
 import { VAceEditor } from 'vue3-ace-editor'
 import { useStorage } from '@vueuse/core'
 import ace from 'ace-builds'
@@ -93,18 +94,19 @@ const resetCode = (): void => {
 }
 
 let marker: number | undefined
+let prevTimeout: any
 const result = computed(() => {
   try {
+    prevTimeout && clearTimeout(prevTimeout)
+
     marker != undefined && pi?.value?.getSession().removeMarker(marker)
     pi.value?.getSession().setAnnotations([])
     const parseResult = pitogo.P.parse(pitogo.S.scanner(code.value))
     pitogo.T.isRecursionGuarded(parseResult)
 
-    const errorMarkerDiv = document.querySelector('.error-marker')
-    if(errorMarkerDiv) {
-      (errorMarkerDiv as any).innerText = ''
-    }
-    return pitogo.T.transpileToGo(parseResult)
+    const res = gofmtr(pitogo.T.transpileToGo(parseResult))
+
+    return res
   } catch (e: any) {
     // e has type: {
     //  message: string
@@ -131,32 +133,50 @@ const result = computed(() => {
 
     marker = pi.value?.getSession().addMarker(underlineErrorRange, 'error-marker', 'text')
 
-    const textToUnderline = pi.value?.getSession().getDocument().getTextRange(underlineErrorRange)
-
     // eslint-disable-next-line vue/no-async-in-computed-properties
-    setTimeout(() => {
+    prevTimeout = setTimeout(() => {
       const errorMarkerDiv = document.querySelector('.error-marker')
       if (errorMarkerDiv) {
+        const textToUnderline = pi.value
+          ?.getSession()
+          .getDocument()
+          .getTextRange(underlineErrorRange)
         ;(errorMarkerDiv as any).innerText = textToUnderline
       } else {
-        setTimeout(() => {
+        prevTimeout = setTimeout(() => {
           const errorMarkerDiv = document.querySelector('.error-marker')
           if (errorMarkerDiv) {
+            const textToUnderline = pi.value
+              ?.getSession()
+              .getDocument()
+              .getTextRange(underlineErrorRange)
             ;(errorMarkerDiv as any).innerText = textToUnderline
           } else {
-            setTimeout(() => {
+            prevTimeout = setTimeout(() => {
               const errorMarkerDiv = document.querySelector('.error-marker')
               if (errorMarkerDiv) {
+                const textToUnderline = pi.value
+                  ?.getSession()
+                  .getDocument()
+                  .getTextRange(underlineErrorRange)
                 ;(errorMarkerDiv as any).innerText = textToUnderline
               } else {
-                setTimeout(() => {
+                prevTimeout = setTimeout(() => {
                   const errorMarkerDiv = document.querySelector('.error-marker')
                   if (errorMarkerDiv) {
+                    const textToUnderline = pi.value
+                      ?.getSession()
+                      .getDocument()
+                      .getTextRange(underlineErrorRange)
                     ;(errorMarkerDiv as any).innerText = textToUnderline
                   } else {
-                    setTimeout(() => {
+                    prevTimeout = setTimeout(() => {
                       const errorMarkerDiv = document.querySelector('.error-marker')
                       if (errorMarkerDiv) {
+                        const textToUnderline = pi.value
+                          ?.getSession()
+                          .getDocument()
+                          .getTextRange(underlineErrorRange)
                         ;(errorMarkerDiv as any).innerText = textToUnderline
                       }
                     }, 5)
