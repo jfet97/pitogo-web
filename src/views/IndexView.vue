@@ -97,7 +97,14 @@ const result = computed(() => {
   try {
     marker != undefined && pi?.value?.getSession().removeMarker(marker)
     pi.value?.getSession().setAnnotations([])
-    return pitogo.T.transpileToGo(pitogo.P.parse(pitogo.S.scanner(code.value)))
+    const parseResult = pitogo.P.parse(pitogo.S.scanner(code.value))
+    pitogo.T.isRecursionGuarded(parseResult)
+
+    const errorMarkerDiv = document.querySelector('.error-marker')
+    if(errorMarkerDiv) {
+      (errorMarkerDiv as any).innerText = ''
+    }
+    return pitogo.T.transpileToGo(parseResult)
   } catch (e: any) {
     // e has type: {
     //  message: string
