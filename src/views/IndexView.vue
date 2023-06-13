@@ -37,7 +37,7 @@
 
         <v-col cols="6">
           <v-ace-editor
-            :value="result"
+            :value="formattedResult"
             theme="chrome"
             @init="() => {}"
             lang="golang"
@@ -59,11 +59,11 @@
 <script setup lang="ts">
 import * as pitogo from 'pitogo'
 import { computed, nextTick, ref, type Ref } from 'vue'
-import { gofmt as gofmtr } from 'gofmtr'
 import { VAceEditor } from 'vue3-ace-editor'
 import { useStorage } from '@vueuse/core'
 import ace from 'ace-builds'
 import { onMounted } from 'vue'
+import { watchEffect } from 'vue'
 
 const pi = ref<ace.Ace.Editor>()
 
@@ -93,6 +93,17 @@ const resetCode = (): void => {
   code.value = defaultCode
 }
 
+async function gofmtr(source: string): Promise<string>{
+  return fetch(
+    'https://go.dev/_/fmt?backend=',
+    {
+      headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-Requested-With': 'XMLHttpRequest'},
+      method: 'post',
+      body: `{'body': '${source}', 'imports': 'true'}`
+    }
+  ).then((res) => res.json()).then(obj => obj["Body"])
+}
+
 let marker: number | undefined
 let prevTimeout: any
 const result = computed(() => {
@@ -104,7 +115,8 @@ const result = computed(() => {
     const parseResult = pitogo.P.parse(pitogo.S.scanner(code.value))
     pitogo.T.isRecursionGuarded(parseResult)
 
-    const res = gofmtr(pitogo.T.transpileToGo(parseResult))
+
+    const res = pitogo.T.transpileToGo(parseResult)
 
     return res
   } catch (e: any) {
@@ -192,6 +204,13 @@ const result = computed(() => {
     return ''
   }
 })
+
+const formattedResult = ref(result.value)
+watchEffect(async () => {
+  const fmtstr = await gofmtr(result.value)
+  formattedResult.value = fmtstr
+})
+
 
 function copyCode() {
   navigator.clipboard.writeText(result.value)
