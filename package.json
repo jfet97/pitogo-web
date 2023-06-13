@@ -12,6 +12,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@types/lodash.debounce": "^4.0.7",
     "@vueuse/core": "^10.1.2",
     "ace-builds": "^1.20.0",
     "lodash.debounce": "^4.0.8",

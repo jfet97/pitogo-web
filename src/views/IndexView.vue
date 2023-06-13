@@ -103,6 +103,7 @@ import { useStorage } from '@vueuse/core'
 import ace from 'ace-builds'
 import { onMounted } from 'vue'
 import { watchEffect, watch } from 'vue'
+import debounce from 'lodash.debounce'
 import { mdiClose } from '@mdi/js'
 
 const pi = ref<ace.Ace.Editor>()
@@ -254,10 +255,10 @@ const result = computed(() => {
 const formattedResult = ref(result.value)
 watch(
   result,
-  async () => {
+  debounce(async () => {
     const fmtstr = await gofmtr(result.value)
     formattedResult.value = fmtstr
-  },
+  }, 500),
   { immediate: true }
 )
 
