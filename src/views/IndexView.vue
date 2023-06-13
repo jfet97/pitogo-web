@@ -110,9 +110,7 @@ async function gofmtr(source: string): Promise<string> {
       imports: 'true'
     }),
     mode: 'no-cors'
-  })
-    .then((res) => res.json())
-    .then((obj) => obj['Body'])
+  }).then((res) => res.text())
 }
 
 let marker: number | undefined
