@@ -11,7 +11,7 @@
               </template>
             </v-tooltip>
 
-            <v-tooltip text="Run the transpiled code" location="right" open-delay="500">
+            <v-tooltip text="Run the transpiled code" location="bottom" open-delay="500">
               <template v-slot:activator="{ props }">
                 <v-btn @click="runCode" class="mr-2" v-bind="props" :disabled="isAwaitRunning"
                   >Run</v-btn
@@ -257,8 +257,18 @@ async function runCode() {
     })
   })
     .then(async (res) => {
-      const runRes = await res.json()
-      runResult.value = runRes.output
+      const runRes: {compile_errors: string, output: string} = await res.json()
+      if (runRes.compile_errors !== ""){
+        runResult.value = `Go Compiler Errors:
+      ${runRes.compile_errors}`
+        }else{
+          const ind = runRes.output.indexOf('fatal error: all goroutines are asleep - deadlock!')
+          if(ind >= 0){
+            runResult.value = runRes.output.substring(0, ind) + "\nDeadlock Reached!"
+          }else{
+            runResult.value = runRes.output
+          }
+        }
       isResultDialogOpen.value = true
     })
     .finally(() => {
