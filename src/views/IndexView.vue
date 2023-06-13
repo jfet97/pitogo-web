@@ -93,15 +93,18 @@ const resetCode = (): void => {
   code.value = defaultCode
 }
 
-async function gofmtr(source: string): Promise<string>{
-  return fetch(
-    'https://go.dev/_/fmt?backend=',
-    {
-      headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-Requested-With': 'XMLHttpRequest'},
-      method: 'post',
-      body: `{'body': '${source}', 'imports': 'true'}`
-    }
-  ).then((res) => res.json()).then(obj => obj["Body"])
+async function gofmtr(source: string): Promise<string> {
+  return fetch('https://go.dev/_/fmt?backend=', {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+      'X-Requested-With': 'XMLHttpRequest'
+    },
+    method: 'post',
+    body: `{'body': '${source}', 'imports': 'true'}`,
+    mode: 'no-cors'
+  })
+    .then((res) => res.json())
+    .then((obj) => obj['Body'])
 }
 
 let marker: number | undefined
@@ -114,7 +117,6 @@ const result = computed(() => {
     pi.value?.getSession().setAnnotations([])
     const parseResult = pitogo.P.parse(pitogo.S.scanner(code.value))
     pitogo.T.isRecursionGuarded(parseResult)
-
 
     const res = pitogo.T.transpileToGo(parseResult)
 
@@ -210,7 +212,6 @@ watchEffect(async () => {
   const fmtstr = await gofmtr(result.value)
   formattedResult.value = fmtstr
 })
-
 
 function copyCode() {
   navigator.clipboard.writeText(result.value)
