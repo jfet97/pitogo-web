@@ -94,9 +94,10 @@ const resetCode = (): void => {
 }
 
 async function gofmtr(source: string): Promise<string> {
-  const formData = new FormData()
-  formData.append('body', source)
-  formData.append('imports', 'true')
+  // const formData = new FormData()
+  // URL
+  // formData.append('body', JSON.stringify(source))
+  // formData.append('imports', 'true')
 
   return fetch('https://go.dev/_/fmt?backend=', {
     headers: {
@@ -104,7 +105,10 @@ async function gofmtr(source: string): Promise<string> {
       'X-Requested-With': 'XMLHttpRequest'
     },
     method: 'post',
-    body: formData,
+    body: new URLSearchParams({
+      body: source,
+      imports: 'true'
+    }),
     mode: 'no-cors'
   })
     .then((res) => res.json())
