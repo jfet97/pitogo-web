@@ -12,6 +12,16 @@
             </v-tooltip>
 
             <v-tooltip
+              text="Run the transpiled code"
+              location="right"
+              open-delay="300"
+            >
+              <template v-slot:activator="{ props }">
+                <v-btn @click="runCode" class="mr-2" v-bind="props">Run</v-btn>
+              </template>
+            </v-tooltip>
+
+            <v-tooltip
               text="Copy the transpiled code in your clipboard"
               location="right"
               open-delay="300"
@@ -53,6 +63,16 @@
         </div>
       </v-row>
     </div>
+    <v-dialog width="auto" v-model="isResultDialogOpen">
+      <v-card>
+        <v-card-text>
+          <pre>{{ runResult.trim() }}</pre>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn block @click="isResultDialogOpen = false">Close Dialog</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -81,10 +101,9 @@ onMounted(() => {
   })
 })
 
-const defaultCode = `
-  A(c) = c(a).log<a>;
-  B(c) = c(b).log<b>;
-  main = (ch1)(ch2) A<ch1> | B<ch2> | (ch1<"ma"> + ch2<"mb"> + log<"ciao">);
+const defaultCode = `A(c) = c(a).log<a>;
+B(c) = c(b).log<b>;
+main = (ch1)(ch2) A<ch1> | B<ch2> | (ch1<"ma"> + ch2<"mb"> + log<"ciao">);
 `
 
 const code = useStorage('pitogo-code', defaultCode)
@@ -220,6 +239,28 @@ watchEffect(async () => {
 
 function copyCode() {
   navigator.clipboard.writeText(result.value)
+}
+
+const runResult = ref('')
+const isResultDialogOpen = ref(false)
+
+async function runCode() {
+  const res = await fetch('https://corsproxy.io/?https://go.dev/_/compile?backend=', {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+      'X-Requested-With': 'XMLHttpRequest'
+    },
+    method: 'post',
+    body: new URLSearchParams({
+      body: formattedResult.value,
+      imports: 'true'
+    })
+  }).then(async (res) => {
+    return (await res.json())
+  })
+
+  runResult.value = res.output
+  isResultDialogOpen.value = true
 }
 </script>
 
