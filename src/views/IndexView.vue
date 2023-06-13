@@ -94,13 +94,17 @@ const resetCode = (): void => {
 }
 
 async function gofmtr(source: string): Promise<string> {
+  const formData = new FormData()
+  formData.append('body', source)
+  formData.append('imports', 'true')
+
   return fetch('https://go.dev/_/fmt?backend=', {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
       'X-Requested-With': 'XMLHttpRequest'
     },
     method: 'post',
-    body: `{'body': '${JSON.stringify(source)}', 'imports': 'true'}`,
+    body: formData,
     mode: 'no-cors'
   })
     .then((res) => res.json())
