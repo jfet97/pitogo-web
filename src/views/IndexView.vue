@@ -100,7 +100,7 @@ async function gofmtr(source: string): Promise<string> {
       'X-Requested-With': 'XMLHttpRequest'
     },
     method: 'post',
-    body: `{'body': '${source}', 'imports': 'true'}`,
+    body: `{'body': '${JSON.stringify(source)}', 'imports': 'true'}`,
     mode: 'no-cors'
   })
     .then((res) => res.json())
