@@ -5,26 +5,24 @@
         <v-col cols="6"><h2>PiTOGo</h2></v-col>
         <v-col cols="6">
           <div>
-            <v-tooltip text="Reset to initial example" location="left" open-delay="300">
+            <v-tooltip text="Reset to initial example" location="left" open-delay="500">
               <template v-slot:activator="{ props }">
                 <v-btn @click="resetCode" class="mr-2" v-bind="props">Reset</v-btn>
               </template>
             </v-tooltip>
 
-            <v-tooltip
-              text="Run the transpiled code"
-              location="right"
-              open-delay="300"
-            >
+            <v-tooltip text="Run the transpiled code" location="right" open-delay="500">
               <template v-slot:activator="{ props }">
-                <v-btn @click="runCode" class="mr-2" v-bind="props">Run</v-btn>
+                <v-btn @click="runCode" class="mr-2" v-bind="props" :disabled="isAwaitRunning"
+                  >Run</v-btn
+                >
               </template>
             </v-tooltip>
 
             <v-tooltip
               text="Copy the transpiled code in your clipboard"
               location="right"
-              open-delay="300"
+              open-delay="500"
             >
               <template v-slot:activator="{ props }">
                 <v-btn @click="copyCode" v-bind="props">Copy</v-btn>
@@ -243,9 +241,11 @@ function copyCode() {
 
 const runResult = ref('')
 const isResultDialogOpen = ref(false)
+const isAwaitRunning = ref(false)
 
 async function runCode() {
-  const res = await fetch('https://corsproxy.io/?https://go.dev/_/compile?backend=', {
+  isAwaitRunning.value = true
+  return await fetch('https://corsproxy.io/?https://go.dev/_/compile?backend=', {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
       'X-Requested-With': 'XMLHttpRequest'
@@ -255,12 +255,15 @@ async function runCode() {
       body: formattedResult.value,
       imports: 'true'
     })
-  }).then(async (res) => {
-    return (await res.json())
   })
-
-  runResult.value = res.output
-  isResultDialogOpen.value = true
+    .then(async (res) => {
+      const runRes = await res.json()
+      runResult.value = runRes.output
+      isResultDialogOpen.value = true
+    })
+    .finally(() => {
+      isAwaitRunning.value = false
+    })
 }
 </script>
 
