@@ -1,5 +1,9 @@
 <template>
   <v-container class="bg-surface-variant h-screen" fluid>
+    <v-overlay :model-value="isAwaitRunning" class="align-center justify-center" persistent>
+      <v-progress-circular color="white" indeterminate size="64"></v-progress-circular>
+    </v-overlay>
+
     <div class="h-100" style="display: flex; flex-direction: column">
       <v-row style="flex: 0 1 auto">
         <v-col cols="6"><h2>PiTOGo</h2></v-col>
@@ -57,18 +61,35 @@
 
       <v-row style="flex: 0 1 auto">
         <div style="width: 100%; text-align: center">
-          Built with ❤️ by Andrea Simone Entroterra & Alessandro Ascensore
+          Built with ❤️ by
+          <a target="_blank" class="" href="https://andreasimonecosta.dev/"
+            >Andrea Simone Entroterra</a
+          >
+          &
+          <a target="_blank" href="https://www.linkedin.com/in/alessandro-scala/"
+            >Alessandro Ascensore</a
+          >
         </div>
       </v-row>
     </div>
     <v-dialog width="auto" v-model="isResultDialogOpen">
       <v-card>
+        <v-card-title>
+          <v-row>
+            <v-col class="d-flex justify-end">
+              <v-btn
+                flat
+                density="compact"
+                :icon="mdiClose"
+                @click="isResultDialogOpen = false"
+              ></v-btn>
+            </v-col>
+          </v-row>
+        </v-card-title>
+
         <v-card-text>
           <pre>{{ runResult.trim() }}</pre>
         </v-card-text>
-        <v-card-actions>
-          <v-btn block @click="isResultDialogOpen = false">Close Dialog</v-btn>
-        </v-card-actions>
       </v-card>
     </v-dialog>
   </v-container>
@@ -76,12 +97,13 @@
 
 <script setup lang="ts">
 import * as pitogo from 'pitogo'
-import { computed, nextTick, ref, type Ref } from 'vue'
+import { computed, ref } from 'vue'
 import { VAceEditor } from 'vue3-ace-editor'
 import { useStorage } from '@vueuse/core'
 import ace from 'ace-builds'
 import { onMounted } from 'vue'
 import { watchEffect } from 'vue'
+import { mdiClose } from '@mdi/js'
 
 const pi = ref<ace.Ace.Editor>()
 
@@ -257,18 +279,18 @@ async function runCode() {
     })
   })
     .then(async (res) => {
-      const runRes: {compile_errors: string, output: string} = await res.json()
-      if (runRes.compile_errors !== ""){
+      const runRes: { compile_errors: string; output: string } = await res.json()
+      if (runRes.compile_errors !== '') {
         runResult.value = `Go Compiler Errors:
       ${runRes.compile_errors}`
-        }else{
-          const ind = runRes.output.indexOf('fatal error: all goroutines are asleep - deadlock!')
-          if(ind >= 0){
-            runResult.value = runRes.output.substring(0, ind) + "\nDeadlock Reached!"
-          }else{
-            runResult.value = runRes.output
-          }
+      } else {
+        const ind = runRes.output.indexOf('fatal error: all goroutines are asleep - deadlock!')
+        if (ind >= 0) {
+          runResult.value = runRes.output.substring(0, ind) + '\nDeadlock Reached!'
+        } else {
+          runResult.value = runRes.output
         }
+      }
       isResultDialogOpen.value = true
     })
     .finally(() => {
@@ -285,5 +307,14 @@ async function runCode() {
   color: red !important;
   text-decoration: underline !important;
   text-decoration-style: wavy !important;
+}
+
+a {
+  color: #eeeeee;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #abcdef;
 }
 </style>

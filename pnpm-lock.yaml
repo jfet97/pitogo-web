@@ -1,4 +1,4 @@
-lockfileVersion: '6.0'
+lockfileVersion: '6.1'
 
 settings:
   autoInstallPeers: true
@@ -15,7 +15,7 @@ dependencies:
     specifier: ^2.1.3
     version: 2.1.3(typescript@5.0.4)(vue@3.3.4)
   pitogo:
-    specifier: ^0.2.3
+    specifier: ^0.2.4
     version: 0.2.4
   vue:
     specifier: ^3.3.4
@@ -29,6 +29,9 @@ dependencies:
 
 devDependencies:
   '@mdi/font':
+    specifier: ^7.2.96
+    version: 7.2.96
+  '@mdi/js':
     specifier: ^7.2.96
     version: 7.2.96
   '@rushstack/eslint-patch':
@@ -364,6 +367,10 @@ packages:
 
   /@mdi/font@7.2.96:
     resolution: {integrity: sha512-e//lmkmpFUMZKhmCY9zdjRe4zNXfbOIJnn6xveHbaV2kSw5aJ5dLXUxcRt1Gxfi7ZYpFLUWlkG2MGSFAiqAu7w==}
+    dev: true
+
+  /@mdi/js@7.2.96:
+    resolution: {integrity: sha512-paR9M9ZT7rKbh2boksNUynuSZMHhqRYnEZOm/KrZTjQ4/FzyhjLHuvw/8XYzP+E7fS4+/Ms/82EN1pl/OFsiIA==}
     dev: true
 
   /@nodelib/fs.scandir@2.1.5:
