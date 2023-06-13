@@ -102,7 +102,7 @@ import { VAceEditor } from 'vue3-ace-editor'
 import { useStorage } from '@vueuse/core'
 import ace from 'ace-builds'
 import { onMounted } from 'vue'
-import { watchEffect } from 'vue'
+import { watchEffect, watch } from 'vue'
 import { mdiClose } from '@mdi/js'
 
 const pi = ref<ace.Ace.Editor>()
@@ -252,10 +252,14 @@ const result = computed(() => {
 })
 
 const formattedResult = ref(result.value)
-watchEffect(async () => {
-  const fmtstr = await gofmtr(result.value)
-  formattedResult.value = fmtstr
-})
+watch(
+  result,
+  async () => {
+    const fmtstr = await gofmtr(result.value)
+    formattedResult.value = fmtstr
+  },
+  { immediate: true }
+)
 
 function copyCode() {
   navigator.clipboard.writeText(result.value)
