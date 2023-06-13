@@ -99,7 +99,7 @@ async function gofmtr(source: string): Promise<string> {
   // formData.append('body', JSON.stringify(source))
   // formData.append('imports', 'true')
 
-  return fetch('https://go.dev/_/fmt?backend=', {
+  return fetch('https://corsproxy.io/?https://go.dev/_/fmt?backend=', {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
       'X-Requested-With': 'XMLHttpRequest'
@@ -108,9 +108,10 @@ async function gofmtr(source: string): Promise<string> {
     body: new URLSearchParams({
       body: source,
       imports: 'true'
-    }),
-    mode: 'no-cors'
-  }).then(async (res) => (await res.json())['Body'])
+    })
+  }).then(async (res) => {
+    return (await res.json())['Body']
+  })
 }
 
 let marker: number | undefined
@@ -132,8 +133,6 @@ const result = computed(() => {
     //  message: string
     //  position: { row_start: number; row_end: number; column_start: number; column_end: number }
     // }
-
-    console.log({ error: e })
 
     pi.value?.getSession().setAnnotations([
       {
