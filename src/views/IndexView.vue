@@ -122,7 +122,26 @@ onMounted(() => {
   })
 })
 
-const defaultCode = `A(c) = c(a).log<a>;
+const defaultCode = `/*
+  Syntax
+
+  | Construct           | pi-calculus Syntax    | PiTOGo Syntax |
+  | ------------------- | --------------------- | ------------- |
+  |Nil process          | nil                   | nil           |
+  |Parallel composition | p | p                 | p | p         |
+  |Choice               | p + p                 | p + p         |
+  |Restriction          | (a)p                  | (a)p          |
+  |Matching             | [a=b].p               | [a=b].p       |
+  |Input                | a(x).p                | a(x).p        |
+  |Output               | āx.p                  | a<x>.p        |
+  |Process definition   | P(a) ≜ p$             | P(a) = p;     |
+  |Process invocation   | P<a>                  | P<a>          |
+  |Replication          | !p                    | !p            |
+
+  The 'main' process is mandatory and must be defined last.
+*/
+
+A(c) = c(a).log<a>;
 B(c) = c(b).log<b>;
 main = (ch1)(ch2) A<ch1> | B<ch2> | (ch1<"ma"> + ch2<"mb"> + log<"ciao">);
 `
@@ -193,30 +212,36 @@ const result = computed(() => {
 
     return res
   } catch (e: any) {
-    // e has type: {
+    // e should have type: {
     //  message: string
     //  position: { row_start: number; row_end: number; column_start: number; column_end: number }
     // }
 
-    pi.value?.getSession().setAnnotations([
-      {
-        row: e.position.row_start - 1,
-        column: e.position.column_start - 1,
-        text: e.message,
-        type: 'error'
-      }
-    ])
+    console.log({ error: e })
 
-    const underlineErrorRange = new ace.Range(
-      e.position.row_start - 1,
-      e.position.column_start - 1,
-      e.position.row_end - 1,
-      e.position.column_end
-    )
+    try {
+      pi.value?.getSession().setAnnotations([
+        {
+          row: e.position.row_start - 1,
+          column: e.position.column_start - 1,
+          text: e.message,
+          type: 'error'
+        }
+      ])
 
-    marker = pi.value?.getSession().addMarker(underlineErrorRange, 'error-marker', 'text')
+      const underlineErrorRange = new ace.Range(
+        e.position.row_start - 1,
+        e.position.column_start - 1,
+        e.position.row_end - 1,
+        e.position.column_end
+      )
 
-    setUnderlineMarker(underlineErrorRange, signal.signal)
+      marker = pi.value?.getSession().addMarker(underlineErrorRange, 'error-marker', 'text')
+
+      setUnderlineMarker(underlineErrorRange, signal.signal)
+    } catch (e) {
+      console.log({ error_internal: e })
+    }
 
     return ''
   }
