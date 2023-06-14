@@ -125,18 +125,18 @@ onMounted(() => {
 const defaultCode = `/*
   Syntax
 
-  | Construct           | pi-calculus Syntax    | PiTOGo Syntax |
-  | ------------------- | --------------------- | ------------- |
-  |Nil process          | nil                   | nil           |
-  |Parallel composition | p | p                 | p | p         |
-  |Choice               | p + p                 | p + p         |
-  |Restriction          | (a)p                  | (a)p          |
-  |Matching             | [a=b].p               | [a=b].p       |
-  |Input                | a(x).p                | a(x).p        |
-  |Output               | āx.p                  | a<x>.p        |
-  |Process definition   | P(a) ≜ p$             | P(a) = p;     |
-  |Process invocation   | P<a>                  | P<a>          |
-  |Replication          | !p                    | !p            |
+  | Construct            | pi-calculus Syntax    | PiTOGo Syntax |
+  | -------------------- | --------------------- | ------------- |
+  | Nil process          | nil                   | nil           |
+  | Parallel composition | p | p                 | p | p         |
+  | Choice               | p + p                 | p + p         |
+  | Restriction          | (a)p                  | (a)p          |
+  | Matching             | [a=b].p               | [a=b].p       |
+  | Input                | a(x).p                | a(x).p        |
+  | Output               | āx.p                  | a<x>.p        |
+  | Process definition   | P(a) ≜ p              | P(a) = p;     |
+  | Process invocation   | P<a>                  | P<a>          |
+  | Replication          | !p                    | !p            |
 
   The 'main' process is mandatory and must be defined last.
 */
