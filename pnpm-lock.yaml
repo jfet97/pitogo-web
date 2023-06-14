@@ -21,8 +21,8 @@ dependencies:
     specifier: ^2.1.3
     version: 2.1.3(typescript@5.0.4)(vue@3.3.4)
   pitogo:
-    specifier: ^0.2.4
-    version: 0.2.4
+    specifier: ^0.2.5
+    version: 0.2.5
   vue:
     specifier: ^3.3.4
     version: 3.3.4
@@ -2047,8 +2047,8 @@ packages:
       vue-demi: 0.14.5(vue@3.3.4)
     dev: false
 
-  /pitogo@0.2.4:
-    resolution: {integrity: sha512-/mjyL5+ejAr0lsjRzqJKqaXXKSBMVB4xe+qnD1R57p7q973YP64QeaIDQfEFUZHO4k5G7SqjiUqQGtUQjAg5fw==}
+  /pitogo@0.2.5:
+    resolution: {integrity: sha512-x4Pi5olhfW89O2TQnE2KxKctZE7ZFNfsS+81/CwOx1ZGyuo55JRB4ysf9ZbEccnOlhtmlZcVvw6k227bxYU0fw==}
     engines: {node: '>= 18.12 <19'}
     dependencies:
       tslib: 2.5.0
