@@ -154,13 +154,37 @@ async function gofmtr(source: string): Promise<string> {
   })
 }
 
+async function setUnderlineMarker(underlineErrorRange: ace.Ace.Range, signal: AbortSignal) {
+  if (signal.aborted) return
+  while (!document.querySelector('.error-marker') && signal.aborted === false) {
+    await new Promise((resolve) => setTimeout(resolve, 2))
+    if (signal.aborted) return
+  }
+
+  if (signal.aborted) return
+  const errorMarkerDiv = document.querySelector('.error-marker')
+
+  if (signal.aborted) return
+  if (errorMarkerDiv) {
+    if (signal.aborted) return
+    const textToUnderline = pi.value?.getSession().getDocument().getTextRange(underlineErrorRange)
+
+    if (signal.aborted) return
+    ;(errorMarkerDiv as any).innerText = textToUnderline
+  }
+}
+
 let marker: number | undefined
-let prevTimeout: any
+let signal = new AbortController()
 const result = computed(() => {
   try {
-    prevTimeout && clearTimeout(prevTimeout)
+    signal.abort()
+    signal = new AbortController()
 
     marker != undefined && pi?.value?.getSession().removeMarker(marker)
+    const errorMarkerDiv = document.querySelector('.error-marker')
+    errorMarkerDiv && ((errorMarkerDiv as any).innerText = '')
+
     pi.value?.getSession().setAnnotations([])
     const parseResult = pitogo.P.parse(pitogo.S.scanner(code.value))
     pitogo.T.isRecursionGuarded(parseResult)
@@ -192,61 +216,7 @@ const result = computed(() => {
 
     marker = pi.value?.getSession().addMarker(underlineErrorRange, 'error-marker', 'text')
 
-    // eslint-disable-next-line vue/no-async-in-computed-properties
-    prevTimeout = setTimeout(() => {
-      const errorMarkerDiv = document.querySelector('.error-marker')
-      if (errorMarkerDiv) {
-        const textToUnderline = pi.value
-          ?.getSession()
-          .getDocument()
-          .getTextRange(underlineErrorRange)
-        ;(errorMarkerDiv as any).innerText = textToUnderline
-      } else {
-        prevTimeout = setTimeout(() => {
-          const errorMarkerDiv = document.querySelector('.error-marker')
-          if (errorMarkerDiv) {
-            const textToUnderline = pi.value
-              ?.getSession()
-              .getDocument()
-              .getTextRange(underlineErrorRange)
-            ;(errorMarkerDiv as any).innerText = textToUnderline
-          } else {
-            prevTimeout = setTimeout(() => {
-              const errorMarkerDiv = document.querySelector('.error-marker')
-              if (errorMarkerDiv) {
-                const textToUnderline = pi.value
-                  ?.getSession()
-                  .getDocument()
-                  .getTextRange(underlineErrorRange)
-                ;(errorMarkerDiv as any).innerText = textToUnderline
-              } else {
-                prevTimeout = setTimeout(() => {
-                  const errorMarkerDiv = document.querySelector('.error-marker')
-                  if (errorMarkerDiv) {
-                    const textToUnderline = pi.value
-                      ?.getSession()
-                      .getDocument()
-                      .getTextRange(underlineErrorRange)
-                    ;(errorMarkerDiv as any).innerText = textToUnderline
-                  } else {
-                    prevTimeout = setTimeout(() => {
-                      const errorMarkerDiv = document.querySelector('.error-marker')
-                      if (errorMarkerDiv) {
-                        const textToUnderline = pi.value
-                          ?.getSession()
-                          .getDocument()
-                          .getTextRange(underlineErrorRange)
-                        ;(errorMarkerDiv as any).innerText = textToUnderline
-                      }
-                    }, 5)
-                  }
-                }, 5)
-              }
-            }, 5)
-          }
-        }, 5)
-      }
-    }, 5)
+    setUnderlineMarker(underlineErrorRange, signal.signal)
 
     return ''
   }
