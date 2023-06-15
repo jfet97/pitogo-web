@@ -131,7 +131,7 @@ const defaultCode = `/*
   | Parallel composition | p | p                 | p | p         |
   | Choice               | p + p                 | p + p         |
   | Restriction          | (a)p                  | (a)p          |
-  | Matching             | [a=b].p               | [a=b].p       |
+  | Matching             | [a=b]p                | [a=b]p        |
   | Input                | a(x).p                | a(x).p        |
   | Output               | āx.p                  | a<x>.p        |
   | Process definition   | P(a) ≜ p              | P(a) = p;     |
